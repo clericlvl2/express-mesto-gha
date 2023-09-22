@@ -1,16 +1,27 @@
-[![Tests](../../actions/workflows/tests-13-sprint.yml/badge.svg)](../../actions/workflows/tests-13-sprint.yml) [![Tests](../../actions/workflows/tests-14-sprint.yml/badge.svg)](../../actions/workflows/tests-14-sprint.yml)
-# Проект Mesto фронтенд + бэкенд
+# Mesto-Backend
 
+Backend application based on Express to process http-requests for the "Mesto" project  (simple photo gallery web app).
 
-## Директории
+The project was completed as part of Yandex Practicum study program.
 
-`/routes` — папка с файлами роутера  
-`/controllers` — папка с файлами контроллеров пользователя и карточки   
-`/models` — папка с файлами описания схем пользователя и карточки  
-  
-Остальные директории вспомогательные, создаются при необходимости разработчиком
+### Technologies:
 
-## Запуск проекта
+- Node.js
+- Express
+- MongoDB
 
-`npm run start` — запускает сервер   
-`npm run dev` — запускает сервер с hot-reload
+### Features:
+
+- Routing for users- and cards- related requests is provided
+- Database is implemented (MongoDB)
+- Data validation is based on Schema
+- Controllers (get, update, delete data) are presented 
+
+### Getting started
+
+To get the Node server running locally:
+
+- Clone this repo
+- `npm install` to install all required dependencies
+- Install MongoDB Community Edition ([instructions](https://docs.mongodb.com/manual/installation/#tutorials)) and run it by executing `mongod`
+- `npm run dev` to start the local server
