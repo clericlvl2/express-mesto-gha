@@ -15,43 +15,57 @@ const filterProperties = (obj = {}, propsToFilter = []) => {
   return filteredObj;
 };
 
-const handleResponse = res => data => res.send({ data });
+const responseHandler = res => data => res.send({ data });
 
-const handleError = res => err => {
-  let code = ERROR_STATUS.CODE_500;
-  let message = ERROR_MESSAGE.default;
+const sendError = (res, code, message) => res
+  .status(code)
+  .json({ message });
 
-  if (err instanceof HttpError) {
-    message = err.message;
-    code = err.statusCode;
-  }
+const errorHandler = (res, errorMessage = ERROR_MESSAGE.default) =>
+  err => {
+    let processedError;
 
-  res.status(code).send({ message });
+    if (err instanceof HttpError) {
+      processedError = err;
+    } else if (err.name === 'ValidationError' || err.name === 'CastError') {
+      processedError = new ValidationError(errorMessage);
+    } else {
+      processedError = new HttpError(errorMessage);
+    }
+
+    sendError(res, processedError.statusCode, processedError.message);
+  };
+
+const unmatchedRouteHandler = (req, res, next) => {
+  sendError(res, ERROR_STATUS.CODE_404, ERROR_MESSAGE.unmatchedRoute);
+  next();
 };
 
-const handleValidationError = (res, fallbackErrorMessage) => err => {
-  let processedError = err;
-
-  if (err.name === 'ValidationError' || err.name === 'CastError') {
-    processedError = new ValidationError(fallbackErrorMessage);
-  }
-
-  handleError(res)(processedError);
+const errorLogger = (err, req, res, next) => {
+  console.error(err.stack);
+  next(err);
 };
 
-const checkDataForNull = fallbackErrorMessage => data => {
+// eslint-disable-next-line no-unused-vars
+const globalErrorHandler = (err, req, res, next) => {
+  sendError(res, ERROR_STATUS.CODE_500, ERROR_MESSAGE.default);
+};
+
+const checkDataForNull = errorMessage => data => {
   if (isExist(data)) {
     return data;
   }
 
-  throw new DocumentNotFoundError(fallbackErrorMessage);
+  throw new DocumentNotFoundError(errorMessage);
 };
 
 module.exports = {
   isExist,
   filterProperties,
-  handleResponse,
-  handleError,
-  handleValidationError,
+  responseHandler,
+  errorHandler,
+  unmatchedRouteHandler,
+  errorLogger,
+  globalErrorHandler,
   checkDataForNull,
 };

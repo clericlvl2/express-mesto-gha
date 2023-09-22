@@ -1,7 +1,3 @@
-module.exports.DEFAULT_PORT = 3000;
-module.exports.DB_URL = 'mongodb://127.0.0.1/mestodb';
-module.exports.TEST_USER_ID = '650a0002caed4fe99702b984';
-
 module.exports.ERROR_STATUS = {
   CODE_400: 400,
   CODE_404: 404,
@@ -26,7 +22,8 @@ module.exports.ERROR_MESSAGE = {
       'Переданы некорректные данные при постановке/снятии лайка.',
     invalidIdOnToggleLike: 'Передан несуществующий ID карточки.',
   },
-  default: 'Произошла ошибка при запросе.',
+  unmatchedRoute: 'Адрес запроса указан неверно.',
+  default: 'На сервере произошла ошибка.',
 };
 
 module.exports.MODEL_UPDATE_OPTIONS = {

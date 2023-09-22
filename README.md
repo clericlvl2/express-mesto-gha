@@ -1,8 +1,10 @@
 # Mesto-Backend
 
-Backend application based on Express to process http-requests for the "Mesto" project  (simple photo gallery web app).
+Backend application based on Express to process http-requests for the "Mesto" project (simple photo gallery web app).
 
 The project was completed as part of Yandex Practicum study program.
+
+[Link to the project repo.](https://github.com/clericlvl2/express-mesto-gha)
 
 ### Technologies:
 
@@ -15,7 +17,7 @@ The project was completed as part of Yandex Practicum study program.
 - Routing for users- and cards- related requests is provided
 - Database is implemented (MongoDB)
 - Data validation is based on Schema
-- Controllers (get, update, delete data) are presented 
+- Controllers (get, update, delete data) are presented
 
 ### Getting started
 
