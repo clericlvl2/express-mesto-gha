@@ -1,8 +1,18 @@
+require('dotenv').config();
+
 const express = require('express');
-const { mongoose } = require('mongoose');
 const bodyParser = require('body-parser');
-const cardsRouter = require('./routes/cards');
-const usersRouter = require('./routes/users');
+const cookieParser = require('cookie-parser');
+const { mongoose } = require('mongoose');
+
+// TODO validate incoming requests
+// TODO применить все эти замечательные библиотеки
+// const helmet = require('helmet');
+// const escape = require('escape-html');
+// requestsRateLimiter
+
+const routes = require('./routes');
+
 const {
   unmatchedRouteHandler,
   errorLogger,
@@ -15,20 +25,15 @@ const { PORT = 3000 } = process.env;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
 });
 
-app.use((req, res, next) => {
-  req.user = { _id: '650a0002caed4fe99702b984' };
-  next();
-});
+app.use('/', routes);
 
-app.use('/cards', cardsRouter);
-app.use('/users', usersRouter);
 app.use(unmatchedRouteHandler);
-
 app.use(errorLogger);
 app.use(globalErrorHandler);
 

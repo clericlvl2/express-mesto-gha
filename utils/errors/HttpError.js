@@ -1,10 +1,14 @@
-const { ERROR_STATUS } = require('../constants');
+const { HTTP_ERROR } = require('../constants');
 
 class HttpError extends Error {
   constructor(message) {
     super(message);
-    this.name = 'HttpError';
-    this.statusCode = ERROR_STATUS.CODE_500;
+    this.setErrorProperties(HTTP_ERROR.SERVER);
+  }
+
+  setErrorProperties({ name, status }) {
+    this.name = name;
+    this.statusCode = status;
   }
 }
 

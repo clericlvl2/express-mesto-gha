@@ -1,11 +1,11 @@
 const HttpError = require('./HttpError');
 const { HTTP_ERROR } = require('../constants');
 
-class ValidationError extends HttpError {
+class ForbiddenError extends HttpError {
   constructor(message) {
     super(message);
-    this.setErrorProperties(HTTP_ERROR.VALIDATION);
+    this.setErrorProperties(HTTP_ERROR.FORBIDDEN);
   }
 }
 
-module.exports = ValidationError;
+module.exports = ForbiddenError;

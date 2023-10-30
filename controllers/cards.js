@@ -5,41 +5,63 @@ const {
   errorHandler,
   checkDataForNull,
 } = require('../utils/helpers');
+const { ForbiddenError } = require('../utils/errors');
 
-module.exports.getCards = (req, res) => {
-  Card.find({}).then(responseHandler(res)).catch(errorHandler(res));
+const {
+  notFoundById,
+  invalidDataOnToggleLike,
+  invalidIdOnToggleLike,
+  invalidDataOnCreateCard,
+  accessToCardIsForbidden,
+} = ERROR_MESSAGE.cards;
+
+module.exports.getCards = (req, res, next) => {
+  Card.find({}).then(responseHandler(res)).catch(errorHandler(next));
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: req.user._id })
     .then(responseHandler(res))
-    .catch(errorHandler(res, ERROR_MESSAGE.cards.invalidDataOnCreateCard));
+    .catch(errorHandler(next, invalidDataOnCreateCard));
 };
 
-module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
-    .then(checkDataForNull(ERROR_MESSAGE.cards.notFoundById))
+module.exports.deleteCard = (req, res, next) => {
+  const { cardId } = req.params;
+
+  Card.findById(cardId)
+    .then(checkDataForNull(notFoundById))
+    .then(card => {
+      if (card.owner !== req.user._id) {
+        return Promise.reject(new ForbiddenError(accessToCardIsForbidden));
+      }
+
+      return Card.deleteById(cardId);
+    })
     .then(() => res.send({}))
-    .catch(errorHandler(res, ERROR_MESSAGE.cards.notFoundById));
+    .catch(errorHandler(next, notFoundById));
 };
 
-const findCardByIdAndUpdate = ({ id, newData, res }) => {
+const findCardByIdAndUpdate = ({
+  res, next, id, newData,
+}) => {
   Card.findByIdAndUpdate(id, newData, MODEL_UPDATE_OPTIONS)
-    .then(checkDataForNull(ERROR_MESSAGE.cards.invalidIdOnToggleLike))
+    .then(checkDataForNull(invalidIdOnToggleLike))
     .then(() => res.send({}))
-    .catch(errorHandler(res, ERROR_MESSAGE.cards.invalidDataOnToggleLike));
+    .catch(errorHandler(next, invalidDataOnToggleLike));
 };
 
-module.exports.likeCard = (req, res) => findCardByIdAndUpdate({
+module.exports.likeCard = (req, res, next) => findCardByIdAndUpdate({
+  res,
+  next,
   id: req.params.cardId,
   newData: { $addToSet: { likes: req.user._id } },
-  res,
 });
 
-module.exports.dislikeCard = (req, res) => findCardByIdAndUpdate({
+module.exports.dislikeCard = (req, res, next) => findCardByIdAndUpdate({
+  res,
+  next,
   id: req.params.cardId,
   newData: { $pull: { likes: req.user._id } },
-  res,
 });

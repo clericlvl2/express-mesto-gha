@@ -27,4 +27,8 @@ const cardSchema = new Schema({
   },
 });
 
+cardSchema.statics.deleteById = function deleteById(_id) {
+  return this.deleteOne({ _id });
+};
+
 module.exports = mongoose.model('card', cardSchema);
