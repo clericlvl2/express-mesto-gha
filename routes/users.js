@@ -14,11 +14,11 @@ const {
   getOwnUser,
 } = require('../controllers/users');
 
+router.get('/', getUsers);
 router.route('/me')
   .get(getOwnUser)
   .patch(validateUserInfo, updateUserInfo);
 router.patch('/me/avatar', validateUserAvatar, updateUserAvatar);
-router.get('/', getUsers);
 router.get('/:id', validateUserId, getUserById);
 
 module.exports = router;

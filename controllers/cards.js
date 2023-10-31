@@ -23,7 +23,9 @@ module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: req.user._id })
-    .then(responseHandler(res))
+    .then(card => {
+      responseHandler(res)(card.getPublicProps());
+    })
     .catch(errorHandler(next, invalidDataOnCreateCard));
 };
 
@@ -33,7 +35,10 @@ module.exports.deleteCard = (req, res, next) => {
   Card.findById(cardId)
     .then(checkDataForNull(notFoundById))
     .then(card => {
-      if (card.owner !== req.user._id) {
+      const cardOwnerId = card.owner.toString();
+      const userId = req.user._id;
+
+      if (cardOwnerId !== userId) {
         return Promise.reject(new ForbiddenError(accessToCardIsForbidden));
       }
 

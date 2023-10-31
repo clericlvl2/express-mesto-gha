@@ -1,20 +1,18 @@
 const { celebrate, Joi } = require('celebrate');
-const objectId = require('joi-objectid');
 
-Joi.objectId = objectId(Joi);
-
-const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/;
-
-const validateText = Joi.string().min(2).max(30);
-const validatePassword = Joi.string().required().min(8);
-const validateEmail = Joi.string().required().email();
-const validateAvatar = Joi.string().regex(urlRegex);
+const {
+  validateURL,
+  validateText,
+  validatePassword,
+  validateEmail,
+  paramsIdValidator,
+} = require('./helpers');
 
 const validateUser = celebrate({
   body: Joi.object().keys({
     name: validateText,
     about: validateText,
-    avatar: validateAvatar,
+    avatar: validateURL,
     email: validateEmail,
     password: validatePassword,
   }),
@@ -29,20 +27,13 @@ const validateUserInfo = celebrate({
 
 const validateUserAvatar = celebrate({
   body: Joi.object().keys({
-    avatar: validateAvatar.required(),
-  }),
-});
-
-const validateUserId = celebrate({
-  params: Joi.object().keys({
-    id: Joi.objectId(),
+    avatar: validateURL.required(),
   }),
 });
 
 module.exports = {
-  urlRegex,
   validateUser,
   validateUserInfo,
   validateUserAvatar,
-  validateUserId,
+  validateUserId: paramsIdValidator('id'),
 };

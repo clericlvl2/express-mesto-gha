@@ -10,7 +10,7 @@ module.exports.login = (req, res, next) => {
   return User.findUserByCredentials(email, password)
     .then(user => {
       const token = jwt.sign({ _id: user._id }, getJwtSecret(), JWT_SIGN_OPTIONS);
-      res.cookie('jwt', token, COOKIE_OPTIONS).end();
+      res.cookie('jwt', token, COOKIE_OPTIONS).send({});
     })
     .catch(next);
 };

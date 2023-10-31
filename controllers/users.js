@@ -70,7 +70,7 @@ module.exports.createUser = (req, res, next) => {
       name, about, avatar, email, password: hashedPassword,
     }))
     .then(user => {
-      responseHandler(res)(user.getPublicFields());
+      responseHandler(res)(user.getPublicProps());
     })
     .catch(err => {
       const error = err.code === 11000

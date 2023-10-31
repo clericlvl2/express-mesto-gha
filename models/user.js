@@ -1,10 +1,12 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const { isEmail } = require('validator');
 
+const { UnauthorizedError } = require('../utils/errors');
 const { DEFAULT_USER, ERROR_MESSAGE } = require('../utils/constants');
-const { urlRegex } = require('../utils/validators/users');
-const { ConflictError } = require('../utils/errors');
+const {
+  validateSchemaEmail: validateEmail,
+  validateSchemaURL: validateURL,
+} = require('../utils/validators/helpers');
 
 const { Schema } = mongoose;
 
@@ -25,9 +27,7 @@ const userSchema = new Schema({
     type: String,
     default: DEFAULT_USER.avatar,
     validate: {
-      validator(value) {
-        return urlRegex.test(value);
-      },
+      validator: validateURL,
       message: ERROR_MESSAGE.users.invalidAvatarUrl,
     },
   },
@@ -36,12 +36,8 @@ const userSchema = new Schema({
     required: true,
     unique: true,
     validate: {
-      validator(value) {
-        return isEmail(value);
-      },
-      message(props) {
-        return `Ошибка: "${props.value}". ${ERROR_MESSAGE.users.invalidEmail}`;
-      },
+      validator: validateEmail,
+      message: ERROR_MESSAGE.users.invalidEmail,
     },
   },
   password: {
@@ -52,7 +48,7 @@ const userSchema = new Schema({
   },
 });
 
-userSchema.methods.getPublicFields = function toJSON() {
+userSchema.methods.getPublicProps = function getPublicProps() {
   const {
     name, about, avatar, email,
   } = this.toObject();
@@ -64,7 +60,7 @@ userSchema.methods.getPublicFields = function toJSON() {
 userSchema.statics.findUserByCredentials = function findUserByCredentials(email, password) {
   const rejectWithConflictError = () => {
     const message = ERROR_MESSAGE.invalidPasswordOrLogin;
-    return Promise.reject(new ConflictError(message));
+    return Promise.reject(new UnauthorizedError(message));
   };
 
   return this.findOne({ email }).select('+password')
@@ -73,7 +69,6 @@ userSchema.statics.findUserByCredentials = function findUserByCredentials(email,
         return rejectWithConflictError();
       }
 
-      // TODO как он сравнивает без соли
       return bcrypt.compare(password, user.password)
         .then(hasMatch => {
           if (!hasMatch) {
