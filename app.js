@@ -4,6 +4,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { mongoose } = require('mongoose');
+const { errors } = require('celebrate');
 
 // TODO validate incoming requests
 // TODO применить все эти замечательные библиотеки
@@ -32,6 +33,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 });
 
 app.use('/', routes);
+
+app.use(errors());
 
 app.use(unmatchedRouteHandler);
 app.use(errorLogger);

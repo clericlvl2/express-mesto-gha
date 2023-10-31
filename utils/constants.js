@@ -51,6 +51,8 @@ module.exports.ERROR_MESSAGE = {
       'Переданы некорректные данные при обновлении аватара.',
     invalidEmailOrPassword: 'Неправильные почта или пароль.',
     invalidEmailOnSignUp: 'Пользователь с такой почтой уже существует',
+    invalidAvatarUrl: 'Ссылка на аватар указана не верно',
+    invalidEmail: 'Почта указана не верно',
   },
   cards: {
     notFoundById: 'Карточка с указанным ID не найдена.',

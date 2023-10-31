@@ -1,12 +1,13 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const { isEmail } = require('validator');
 
 const { DEFAULT_USER, ERROR_MESSAGE } = require('../utils/constants');
+const { urlRegex } = require('../utils/validators/users');
 const { ConflictError } = require('../utils/errors');
 
 const { Schema } = mongoose;
 
-// TODO add custom validator (email + avatar)
 const userSchema = new Schema({
   name: {
     type: String,
@@ -23,11 +24,25 @@ const userSchema = new Schema({
   avatar: {
     type: String,
     default: DEFAULT_USER.avatar,
+    validate: {
+      validator(value) {
+        return urlRegex.test(value);
+      },
+      message: ERROR_MESSAGE.users.invalidAvatarUrl,
+    },
   },
   email: {
     type: String,
     required: true,
     unique: true,
+    validate: {
+      validator(value) {
+        return isEmail(value);
+      },
+      message(props) {
+        return `Ошибка: "${props.value}". ${ERROR_MESSAGE.users.invalidEmail}`;
+      },
+    },
   },
   password: {
     type: String,
@@ -36,6 +51,15 @@ const userSchema = new Schema({
     select: false,
   },
 });
+
+userSchema.methods.getPublicFields = function toJSON() {
+  const {
+    name, about, avatar, email,
+  } = this.toObject();
+  return {
+    name, about, avatar, email,
+  };
+};
 
 userSchema.statics.findUserByCredentials = function findUserByCredentials(email, password) {
   const rejectWithConflictError = () => {

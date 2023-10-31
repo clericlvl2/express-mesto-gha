@@ -4,12 +4,10 @@ const { isExist, getJwtSecret } = require('../utils/helpers');
 const { UnauthorizedError } = require('../utils/errors');
 const { ERROR_MESSAGE } = require('../utils/constants');
 
-const AUTH_HEADER = 'Bearer ';
-
 // eslint-disable-next-line consistent-return
 module.exports.auth = (req, res, next) => {
-  const { authorization } = req.headers;
-  const isLogged = isExist(authorization) && authorization.startsWith(AUTH_HEADER);
+  const jwtToken = req.cookies.jwt;
+  const isLogged = isExist(jwtToken);
 
   const getAuthError = () => {
     const message = ERROR_MESSAGE.rejectUnauthorized;
@@ -20,16 +18,15 @@ module.exports.auth = (req, res, next) => {
     throw getAuthError();
   }
 
-  const token = authorization.replace(AUTH_HEADER, '');
   let payload;
 
   try {
-    payload = jwt.verify(token, getJwtSecret());
+    payload = jwt.verify(jwtToken, getJwtSecret());
   } catch (err) {
     throw getAuthError();
   }
 
-  req.user = payload; // записываем пейлоуд в объект запроса
+  req.user = payload;
 
-  next(); // пропускаем запрос дальше
+  next();
 };

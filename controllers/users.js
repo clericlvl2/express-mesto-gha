@@ -69,7 +69,9 @@ module.exports.createUser = (req, res, next) => {
     .then(hashedPassword => User.create({
       name, about, avatar, email, password: hashedPassword,
     }))
-    .then(responseHandler(res))
+    .then(user => {
+      responseHandler(res)(user.getPublicFields());
+    })
     .catch(err => {
       const error = err.code === 11000
         ? new ConflictError(invalidEmailOnSignUp)
