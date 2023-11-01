@@ -22,26 +22,18 @@ const cardSchema = new Schema({
   },
   owner: {
     type: Schema.Types.ObjectId,
+    ref: 'user',
     required: true,
   },
   likes: {
-    type: [Schema.Types.ObjectId],
+    type: [{ type: Schema.Types.ObjectId, ref: 'user' }],
     default: [],
   },
   createdAt: {
     type: Date,
-    default: Date.now(),
+    default: Date.now,
   },
 });
-
-cardSchema.methods.getPublicProps = function getPublicProps() {
-  const {
-    name, link, owner, likes, createdAt, _id,
-  } = this.toObject();
-  return {
-    name, link, owner, likes, createdAt, _id,
-  };
-};
 
 cardSchema.statics.deleteById = function deleteById(_id) {
   return this.deleteOne({ _id });

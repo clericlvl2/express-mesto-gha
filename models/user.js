@@ -43,18 +43,13 @@ const userSchema = new Schema({
   password: {
     type: String,
     required: true,
-    minlength: 8,
     select: false,
   },
 });
 
 userSchema.methods.getPublicProps = function getPublicProps() {
-  const {
-    name, about, avatar, email,
-  } = this.toObject();
-  return {
-    name, about, avatar, email,
-  };
+  const { password, ...publicProps } = this.toObject();
+  return publicProps;
 };
 
 userSchema.statics.findUserByCredentials = function findUserByCredentials(email, password) {

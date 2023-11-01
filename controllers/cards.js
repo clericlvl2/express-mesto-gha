@@ -16,16 +16,17 @@ const {
 } = ERROR_MESSAGE.cards;
 
 module.exports.getCards = (req, res, next) => {
-  Card.find({}).then(responseHandler(res)).catch(errorHandler(next));
+  Card.find({})
+    .populate(['owner', 'likes'])
+    .then(responseHandler(res))
+    .catch(errorHandler(next));
 };
 
 module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: req.user._id })
-    .then(card => {
-      responseHandler(res)(card.getPublicProps());
-    })
+    .then(responseHandler(res))
     .catch(errorHandler(next, invalidDataOnCreateCard));
 };
 

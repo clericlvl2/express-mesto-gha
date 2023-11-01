@@ -11,11 +11,11 @@ module.exports.auth = (req, res, next) => {
 
   const getAuthError = () => {
     const message = ERROR_MESSAGE.rejectUnauthorized;
-    return new UnauthorizedError(message);
+    throw new UnauthorizedError(message);
   };
 
   if (!isLogged) {
-    throw getAuthError();
+    getAuthError();
   }
 
   let payload;
@@ -23,7 +23,7 @@ module.exports.auth = (req, res, next) => {
   try {
     payload = jwt.verify(jwtToken, getJwtSecret());
   } catch (err) {
-    throw getAuthError();
+    getAuthError();
   }
 
   req.user = payload;

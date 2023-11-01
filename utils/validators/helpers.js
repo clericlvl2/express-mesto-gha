@@ -7,7 +7,7 @@ Joi.objectId = objectId(Joi);
 const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/;
 
 const validateText = Joi.string().min(2).max(30);
-const validatePassword = Joi.string().required().min(8);
+const validatePassword = Joi.string().required();
 const validateEmail = Joi.string().required().email();
 const validateURL = Joi.string().regex(urlRegex);
 const validateObjectId = Joi.objectId();
