@@ -52,7 +52,7 @@ const unmatchedRouteHandler = (req, res, next) => {
   next(new NotFoundError(ERROR_MESSAGE.unmatchedRoute));
 };
 
-const errorLogger = (err, req, res, next) => {
+const errorConsoleLogger = (err, req, res, next) => {
   console.error(err.stack);
   next(err);
 };
@@ -79,7 +79,7 @@ module.exports = {
   responseHandler,
   errorHandler,
   unmatchedRouteHandler,
-  errorLogger,
+  errorConsoleLogger,
   globalErrorHandler,
   checkDataForNull,
 };

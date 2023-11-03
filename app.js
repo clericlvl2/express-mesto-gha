@@ -5,12 +5,12 @@ const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const { mongoose } = require('mongoose');
 const { errors } = require('celebrate');
-const rateLimiter = require('express-rate-limit');
 
 const routes = require('./routes');
-const { RATE_LIMITER_CONFIG } = require('./middlewares/constants');
+const { limiter } = require('./middlewares/limiter');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 const {
-  errorLogger,
+  errorConsoleLogger,
   globalErrorHandler,
 } = require('./utils/helpers');
 
@@ -22,16 +22,18 @@ app.use(helmet());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
-app.use(rateLimiter(RATE_LIMITER_CONFIG));
+app.use(limiter);
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
 });
 
+app.use(requestLogger);
 app.use('/', routes);
+app.use(errorLogger);
+app.use(errorConsoleLogger);
 
 app.use(errors());
-app.use(errorLogger);
 app.use(globalErrorHandler);
 
 app.listen(PORT, () => {
